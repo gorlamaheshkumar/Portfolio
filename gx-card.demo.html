@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Glossy Card — Skin Cancer Detection (demo)</title>
+<!-- Pull in your portfolio's local fonts so the demo matches the live site.
+     (Safe to remove if you drop the card straight into index.html.) -->
+<link rel="stylesheet" href="fonts.css"/>
+<style>
+/* ════════════════════════════════════════════════════════════════════
+   DEMO PAGE CHROME (not part of the component — just to stage the card)
+   ════════════════════════════════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;display:grid;place-items:center;padding:4rem 1.5rem;
+  /* a dark, faintly-lit backdrop so the frosted glass + backdrop-filter reads */
+  background:
+    radial-gradient(900px 600px at 25% 18%, rgba(0,240,255,.10), transparent 60%),
+    radial-gradient(800px 600px at 80% 85%, rgba(123,47,255,.12), transparent 60%),
+    #03040a;
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   ✦ GLOSSY PROJECT CARD — component styles (prefix .gx- to avoid clashes)
+   Drop everything in this section into your style.css.
+   ════════════════════════════════════════════════════════════════════ */
+.gx-card{
+  /* ---- design tokens (mirror your portfolio palette) ---- */
+  --gx-c1:#00f0ff;            /* signal cyan   */
+  --gx-c2:#7b2fff;            /* aggregation   */
+  --gx-c3:#ff2bff;            /* terminus      */
+  --gx-ink:#eef3ff;           /* primary text  */
+  --gx-dim:rgba(232,238,255,.62);
+  --gx-ease:cubic-bezier(.16,1,.3,1);   /* easeOutExpo — your --e1 */
+  --gx-radius:22px;
+
+  /* the spring writes these two; CSS just consumes them */
+  --gx-mx:50%; --gx-my:50%;   /* cursor position for the follow-glow */
+
+  position:relative;
+  width:min(90vw,400px);
+  aspect-ratio:4/5;                       /* portrait project card */
+  border-radius:var(--gx-radius);
+  overflow:hidden;                        /* keep media + sheen inside the glass */
+  isolation:isolate;                      /* own stacking context for blend modes */
+  cursor:pointer;
+  transform:perspective(1000px);          /* JS spring appends rotateX/Y + scale */
+  transform-style:preserve-3d;
+  will-change:transform;
+
+  /* ---- THE GLOSSY GLASS RECIPE ----
+     1) diagonal white gradient = the glossy highlight
+     2) a dark floor so text stays legible over any video/bg
+     3) backdrop-filter blur = frosts whatever is behind the card (your lattice)
+     4) 1px translucent-white border = simulated edge lighting
+     5) layered shadow = depth + a faint cyan ambient glow                       */
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,0) 42%),
+    linear-gradient(rgba(8,10,22,.55), rgba(8,10,22,.72));
+  backdrop-filter:blur(16px) saturate(140%);
+  -webkit-backdrop-filter:blur(16px) saturate(140%);
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.22) inset,          /* top edge specular     */
+    0 -1px 0 rgba(255,255,255,.04) inset,         /* bottom edge           */
+    0 30px 60px -28px rgba(0,0,0,.85),            /* cast depth shadow     */
+    0 8px 24px -16px rgba(0,240,255,.35);         /* faint cyan ambient    */
+  transition:box-shadow .6s var(--gx-ease), border-color .6s var(--gx-ease);
+}
+.gx-card.is-hover{
+  border-color:rgba(255,255,255,.28);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.30) inset,
+    0 -1px 0 rgba(255,255,255,.05) inset,
+    0 44px 90px -30px rgba(0,0,0,.9),
+    0 10px 40px -14px rgba(0,240,255,.5);
+}
+
+/* ---- MEDIA LAYER: SVG poster (always on) + video (fades in on hover) ---- */
+.gx-media{position:absolute;inset:0;z-index:0;overflow:hidden}
+.gx-poster,
+.gx-video{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;display:block;
+  transition:transform .9s var(--gx-ease), opacity .7s var(--gx-ease), filter .7s var(--gx-ease);
+}
+.gx-poster{opacity:.92;transform:scale(1.02);filter:saturate(115%)}
+.gx-video{opacity:0;transform:scale(1.06)}          /* hidden + not playing by default */
+.gx-card.is-hover .gx-poster{transform:scale(1.08);filter:saturate(130%) brightness(1.05)}
+.gx-card.is-hover .gx-video {opacity:1;transform:scale(1.04)}   /* graceful fade-in */
+
+/* legibility scrim — guarantees text contrast over any bright frame */
+.gx-scrim{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg, rgba(3,4,10,.10) 0%, rgba(3,4,10,.18) 42%, rgba(3,4,10,.86) 100%);
+}
+
+/* ---- ANIMATED GLOSS SHEEN (diagonal sweep on hover) ---- */
+.gx-sheen{
+  position:absolute;top:0;bottom:0;left:-65%;width:55%;z-index:3;pointer-events:none;
+  background:linear-gradient(105deg, transparent 0%, rgba(255,255,255,.10) 42%, rgba(255,255,255,.45) 50%, rgba(255,255,255,.10) 58%, transparent 100%);
+  transform:translateX(0) skewX(-14deg);opacity:0;
+}
+.gx-card.is-hover .gx-sheen{animation:gxSheen 1.05s var(--gx-ease) .05s}
+@keyframes gxSheen{
+  0%{transform:translateX(0) skewX(-14deg);opacity:0}
+  14%{opacity:1}
+  86%{opacity:1}
+  100%{transform:translateX(330%) skewX(-14deg);opacity:0}
+}
+
+/* ---- CURSOR-FOLLOW GLOW ---- */
+.gx-glow{
+  position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(220px circle at var(--gx-mx) var(--gx-my), rgba(0,240,255,.22), transparent 60%);
+  opacity:0;transition:opacity .5s var(--gx-ease);mix-blend-mode:screen;
+}
+.gx-card.is-hover .gx-glow{opacity:1}
+
+/* ---- CONTENT ---- */
+.gx-content{
+  position:absolute;inset:0;z-index:4;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  gap:.85rem;padding:1.6rem 1.5rem 1.7rem;
+  /* lift content slightly toward the viewer for a parallax feel */
+  transform:translateZ(40px);
+  /* subtle drop shadow on the whole block keeps text crisp over the media */
+  filter:drop-shadow(0 2px 10px rgba(0,0,0,.55));
+}
+.gx-top{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.gx-tag{
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:.6rem;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--gx-c1);
+  padding:.32rem .7rem;border:1px solid rgba(0,240,255,.32);border-radius:100px;
+  background:rgba(0,240,255,.06);backdrop-filter:blur(4px);
+}
+.gx-status{
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:.58rem;font-weight:700;
+  letter-spacing:.14em;color:#5dffa6;display:inline-flex;align-items:center;gap:.4rem;
+}
+.gx-status i{width:6px;height:6px;border-radius:50%;background:#5dffa6;box-shadow:0 0 8px #5dffa6;animation:gxBlink 2.2s infinite}
+@keyframes gxBlink{0%,100%{opacity:1}50%{opacity:.35}}
+
+.gx-title{
+  font-family:'Space Grotesk','Inter',system-ui,sans-serif;
+  font-size:1.6rem;font-weight:700;line-height:1.08;letter-spacing:-.02em;color:var(--gx-ink);
+}
+.gx-title em{
+  font-style:normal;
+  background:linear-gradient(95deg,var(--gx-c1),var(--gx-c2) 55%,var(--gx-c3));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.gx-desc{font-size:.84rem;line-height:1.6;color:var(--gx-dim);max-width:34ch}
+
+.gx-tech{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.1rem}
+.gx-tech span{
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:.58rem;letter-spacing:.04em;
+  padding:.24rem .6rem;border:1px solid rgba(255,255,255,.16);border-radius:100px;
+  color:var(--gx-ink);background:rgba(255,255,255,.05)
+}
+
+.gx-link{
+  align-self:flex-start;margin-top:.5rem;display:inline-flex;align-items:center;gap:.5rem;
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:.72rem;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;color:#03040a;text-decoration:none;
+  padding:.6rem 1.05rem;border-radius:8px;
+  background:linear-gradient(135deg,var(--gx-c1),var(--gx-c2));
+  transition:transform .4s var(--gx-ease), box-shadow .4s var(--gx-ease);
+  box-shadow:0 6px 18px -8px rgba(0,240,255,.6);
+}
+.gx-link span{transition:transform .4s var(--gx-ease)}
+.gx-link:hover{transform:translateY(-2px);box-shadow:0 10px 26px -8px rgba(0,240,255,.8)}
+.gx-link:hover span{transform:translate(3px,-3px)}
+.gx-card :focus-visible{outline:2px solid var(--gx-c1);outline-offset:3px;border-radius:8px}
+
+/* ════════════ ACCESSIBILITY: respect reduced-motion ════════════ */
+@media (prefers-reduced-motion:reduce){
+  .gx-card,.gx-poster,.gx-video,.gx-link,.gx-link span{transition:none!important}
+  .gx-card.is-hover .gx-sheen{animation:none}
+  .gx-status i{animation:none}
+  .gx-card{transform:none!important}        /* JS also skips the tilt entirely */
+  .gx-card.is-hover .gx-video{opacity:0}    /* no autoplay video for reduced-motion */
+}
+/* On touch devices: no hover → show the poster, keep it calm (saves data/battery) */
+@media (hover:none),(pointer:coarse){
+  .gx-card{backdrop-filter:none;-webkit-backdrop-filter:none;background:linear-gradient(rgba(8,10,22,.4),rgba(8,10,22,.72))}
+  .gx-sheen,.gx-glow{display:none}
+}
+</style>
+</head>
+<body>
+
+  <!-- ════════════════════════════════════════════════════════════════
+       ✦ CARD MARKUP — drop this into your projects grid.
+       Swap the <source> paths for your real video + delete the comment.
+       ════════════════════════════════════════════════════════════════ -->
+  <article class="gx-card" data-gx-tilt>
+
+    <!-- MEDIA: SVG poster always visible; video fades in over it on hover -->
+    <div class="gx-media">
+      <!-- Beautiful AI/medical "thumbnail" rendered as inline SVG (zero assets,
+           crisp at any size, themes with your palette). Replace with an <img>
+           if you prefer a photo. -->
+      <svg class="gx-poster" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <radialGradient id="gxBg" cx="32%" cy="28%" r="90%">
+            <stop offset="0%" stop-color="#0a1430"/>
+            <stop offset="55%" stop-color="#070a1c"/>
+            <stop offset="100%" stop-color="#03040a"/>
+          </radialGradient>
+          <linearGradient id="gxStroke" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#00f0ff"/>
+            <stop offset="100%" stop-color="#7b2fff"/>
+          </linearGradient>
+          <radialGradient id="gxLesion" cx="50%" cy="45%" r="60%">
+            <stop offset="0%" stop-color="#ff2bff" stop-opacity=".9"/>
+            <stop offset="60%" stop-color="#7b2fff" stop-opacity=".5"/>
+            <stop offset="100%" stop-color="#7b2fff" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+
+        <rect width="400" height="500" fill="url(#gxBg)"/>
+
+        <!-- faint dotted scan grid -->
+        <g fill="#00f0ff" opacity=".10">
+          <!-- generated grid of dots -->
+          <g>
+            <circle cx="40"  cy="60"  r="1.4"/><circle cx="120" cy="60"  r="1.4"/><circle cx="200" cy="60"  r="1.4"/><circle cx="280" cy="60"  r="1.4"/><circle cx="360" cy="60"  r="1.4"/>
+            <circle cx="40"  cy="140" r="1.4"/><circle cx="120" cy="140" r="1.4"/><circle cx="200" cy="140" r="1.4"/><circle cx="280" cy="140" r="1.4"/><circle cx="360" cy="140" r="1.4"/>
+            <circle cx="40"  cy="220" r="1.4"/><circle cx="120" cy="220" r="1.4"/><circle cx="200" cy="220" r="1.4"/><circle cx="280" cy="220" r="1.4"/><circle cx="360" cy="220" r="1.4"/>
+            <circle cx="40"  cy="300" r="1.4"/><circle cx="120" cy="300" r="1.4"/><circle cx="200" cy="300" r="1.4"/><circle cx="280" cy="300" r="1.4"/><circle cx="360" cy="300" r="1.4"/>
+          </g>
+        </g>
+
+        <!-- dermatoscope lens: concentric rings -->
+        <g fill="none" stroke="url(#gxStroke)" stroke-width="1.4">
+          <circle cx="205" cy="185" r="112" opacity=".25"/>
+          <circle cx="205" cy="185" r="88"  opacity=".45"/>
+          <circle cx="205" cy="185" r="64"  opacity=".7"/>
+        </g>
+        <!-- the classified lesion glow inside the lens -->
+        <ellipse cx="205" cy="185" rx="46" ry="40" fill="url(#gxLesion)"/>
+        <!-- classification bounding brackets -->
+        <g stroke="#00f0ff" stroke-width="2" fill="none" opacity=".9">
+          <path d="M150 140 h-16 v16"/><path d="M260 140 h16 v16"/>
+          <path d="M150 232 h-16 v-16"/><path d="M260 232 h16 v-16"/>
+        </g>
+
+        <!-- neural-net nodes + links across the lower third -->
+        <g stroke="url(#gxStroke)" stroke-width="1" opacity=".55">
+          <line x1="70" y1="360" x2="160" y2="330"/><line x1="70" y1="360" x2="160" y2="400"/>
+          <line x1="160" y1="330" x2="250" y2="360"/><line x1="160" y1="400" x2="250" y2="360"/>
+          <line x1="250" y1="360" x2="340" y2="330"/><line x1="250" y1="360" x2="340" y2="400"/>
+        </g>
+        <g fill="#9ff7ff">
+          <circle cx="70"  cy="360" r="4"/><circle cx="160" cy="330" r="4"/><circle cx="160" cy="400" r="4"/>
+          <circle cx="250" cy="360" r="4"/><circle cx="340" cy="330" r="4"/><circle cx="340" cy="400" r="4"/>
+        </g>
+      </svg>
+
+      <!-- LOOPING VIDEO — muted/loop/playsinline + preload="none" so it only
+           downloads on first hover (perf). Add your own compressed clip:
+           assets/skin-ai.webm (preferred) and .mp4 (H.264) fallback, < 5 MB. -->
+      <video class="gx-video" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true">
+        <source src="assets/skin-ai.webm" type="video/webm"/>
+        <source src="assets/skin-ai.mp4"  type="video/mp4"/>
+      </video>
+    </div>
+
+    <div class="gx-scrim" aria-hidden="true"></div>
+    <span class="gx-sheen" aria-hidden="true"></span>
+    <span class="gx-glow"  aria-hidden="true"></span>
+
+    <div class="gx-content">
+      <div class="gx-top">
+        <span class="gx-tag">Deep Learning · CNN</span>
+        <span class="gx-status"><i></i>Deployed</span>
+      </div>
+      <h3 class="gx-title">Skin Cancer <em>Detection</em><br/>&amp; Classification</h3>
+      <p class="gx-desc">A deep-learning CNN that detects and grades skin-cancer severity from dermatoscopic images. Google Vision filters non-skin inputs and GenAI explains each finding in plain language.</p>
+      <div class="gx-tech"><span>Python</span><span>CNN</span><span>TensorFlow</span><span>Google Vision</span><span>GenAI</span></div>
+      <a class="gx-link" href="https://github.com/gorlamaheshkumar/Skin-Cancer-Detection-and-Classification-by-Using-Deep-Learning" target="_blank" rel="noopener noreferrer" aria-label="View Skin Cancer Detection on GitHub (opens in new tab)">
+        View on GitHub <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </article>
+
+<script>
+/* ════════════════════════════════════════════════════════════════════
+   ✦ GLOSSY CARD INTERACTION — vanilla JS, no libraries.
+   - 3D tilt + scale driven by a real SPRING integrator (Framer-like settle)
+   - cursor-follow glow
+   - hover-only video play/pause with race-safe play() handling
+   Drop this <script> into your site (or merge into main.js).
+   ════════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  var REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var TOUCH   = matchMedia('(hover: none), (pointer: coarse)').matches;
+
+  document.querySelectorAll('[data-gx-tilt]').forEach(function (card) {
+    var video = card.querySelector('.gx-video');
+
+    /* ---- spring state ----
+       cur = current value, vel = velocity, tgt = target.
+       A classic damped spring: a = -k·(x−target) − c·v   (k=stiffness, c=damping)
+       Underdamped (c < 2·√k) → a little overshoot before it settles = "liquid". */
+    var K = 170, C = 20;                       // tuned: snappy with a soft bounce
+    var cur = { rx: 0, ry: 0, s: 1 };
+    var vel = { rx: 0, ry: 0, s: 0 };
+    var tgt = { rx: 0, ry: 0, s: 1 };
+    var raf = null, last = 0;
+
+    function apply() {
+      card.style.transform =
+        'perspective(1000px) rotateX(' + cur.rx.toFixed(3) + 'deg) rotateY(' +
+        cur.ry.toFixed(3) + 'deg) scale(' + cur.s.toFixed(4) + ')';
+    }
+
+    function tick(now) {
+      var dt = last ? Math.min((now - last) / 1000, 0.05) : 0.016;  // clamp for stability
+      last = now;
+      var settled = true;
+      ['rx', 'ry', 's'].forEach(function (key) {
+        var accel = -K * (cur[key] - tgt[key]) - C * vel[key];
+        vel[key] += accel * dt;
+        cur[key] += vel[key] * dt;
+        if (Math.abs(vel[key]) > 0.0015 || Math.abs(cur[key] - tgt[key]) > 0.0015) settled = false;
+      });
+      apply();
+      if (settled) {                         // snap exactly to target and stop the loop (idle = 0 CPU)
+        cur.rx = tgt.rx; cur.ry = tgt.ry; cur.s = tgt.s;
+        apply(); raf = null; last = 0; return;
+      }
+      raf = requestAnimationFrame(tick);
+    }
+    function kick() { if (!raf) { last = 0; raf = requestAnimationFrame(tick); } }
+
+    /* ---- hover-only video, race-safe ---- */
+    function playVideo() {
+      if (!video || REDUCED) return;
+      var p = video.play();                  // returns a Promise in modern browsers
+      if (p && p.catch) p.catch(function () {});  // swallow AbortError from a quick mouse-leave
+    }
+    function stopVideo() {
+      if (!video) return;
+      video.pause();                         // CSS fades opacity to 0; the frozen frame is hidden by then
+    }
+
+    /* ---- reduced-motion / touch: static, accessible, no JS motion ---- */
+    if (REDUCED || TOUCH) return;
+
+    card.addEventListener('mouseenter', function () {
+      tgt.s = 1.045;
+      card.classList.add('is-hover');
+      playVideo();
+      kick();
+    });
+
+    card.addEventListener('mousemove', function (e) {
+      var r = card.getBoundingClientRect();
+      var px = (e.clientX - r.left) / r.width  - 0.5;   // -0.5 … 0.5
+      var py = (e.clientY - r.top)  / r.height - 0.5;
+      tgt.ry =  px * 15;                                 // rotateY follows horizontal
+      tgt.rx = -py * 15;                                 // rotateX follows vertical (inverted)
+      card.style.setProperty('--gx-mx', (e.clientX - r.left) + 'px');
+      card.style.setProperty('--gx-my', (e.clientY - r.top)  + 'px');
+      kick();
+    });
+
+    card.addEventListener('mouseleave', function () {
+      tgt.rx = 0; tgt.ry = 0; tgt.s = 1;                 // spring eases everything home
+      card.classList.remove('is-hover');
+      stopVideo();
+      kick();
+    });
+
+    /* keyboard parity: focusing the link gives the same lift (no video, to be calm) */
+    var link = card.querySelector('.gx-link');
+    if (link) {
+      link.addEventListener('focus', function () { tgt.s = 1.03; card.classList.add('is-hover'); kick(); });
+      link.addEventListener('blur',  function () { tgt.s = 1; card.classList.remove('is-hover'); kick(); });
+    }
+  });
+})();
+</script>
+</body>
+</html>
