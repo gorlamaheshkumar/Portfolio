@@ -1,213 +1,288 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Mahesh Gorla Portfolio</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <style>
-    body, h1,h2,h3,h4,h5,h6 {font-family: "Montserrat", sans-serif}
-    .w3-row-padding img {margin-bottom: 12px}
-    /* Set the width of the sidebar to 120px */
-    .w3-sidebar {width: 120px;background: #222;}
-    /* Add a left margin to the "page content" that matches the width of the sidebar (120px) */
-    #main {margin-left: 120px}
-    /* Remove margins from "page content" on small screens */
-    @media only screen and (max-width: 600px) {#main {margin-left: 0}}
-    /* Center align button and footer icons */
-    .w3-center-align {text-align: center;}
-    .w3-footer-icons i {margin: 0 10px;}
-    </style>
-  </head>
-<body class="w3-black">
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mahesh Gorla — Programme Analyst</title>
+  <meta name="description" content="Mahesh Gorla — Programme Analyst at Cognizant, Global Network Services. Monitoring, troubleshooting and automation. Built with Three.js."/>
+  <meta name="theme-color" content="#03040a"/>
+  <link rel="stylesheet" href="fonts.css"/>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="three.min.js"></script>
+</head>
+<body>
 
-<!-- Icon Bar (Sidebar - hidden on small screens) -->
-<nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center">
-  <!-- Avatar image in top left corner -->
-  <img src="Files/mk.png" style="width:100%">
-  <a href="#" class="w3-bar-item w3-button w3-padding-large w3-black">
-    <i class="fa fa-home w3-xxlarge"></i>
-    <p>HOME</p>
-  </a>
-  <a href="#about" class="w3-bar-item w3-button w3-padding-large w3-hover-black">
-    <i class="fa fa-user w3-xxlarge"></i>
-    <p>ABOUT</p>
-  </a>
-  <a href="#projects" class="w3-bar-item w3-button w3-padding-large w3-hover-black">
-    <i class="fa fa-eye w3-xxlarge"></i>
-    <p>PROJECTS</p>
-  </a>
-  <a href="#contact" class="w3-bar-item w3-button w3-padding-large w3-hover-black">
-    <i class="fa fa-envelope w3-xxlarge"></i>
-    <p>CONTACT</p>
-  </a>
-</nav>
-
-<!-- Navbar on small screens (Hidden on medium and large screens) -->
-<div class="w3-top w3-hide-large w3-hide-medium" id="myNavbar">
-  <div class="w3-bar w3-black w3-opacity w3-hover-opacity-off w3-center w3-small">
-    <a href="#" class="w3-bar-item w3-button" style="width:25% !important">HOME</a>
-    <a href="#about" class="w3-bar-item w3-button" style="width:25% !important">ABOUT</a>
-    <a href="#projects" class="w3-bar-item w3-button" style="width:25% !important">PROJECTS</a>
-    <a href="#contact" class="w3-bar-item w3-button" style="width:25% !important">CONTACT</a>
+  <!-- ── Preloader: warp jump + boot handshake ── -->
+  <div id="preloader" role="status" aria-busy="true" aria-label="Loading">
+    <canvas id="bolt" aria-hidden="true"></canvas>
+    <div class="pl-center">
+      <pre id="pl-log" aria-hidden="true"></pre>
+      <div class="pl-ring">
+        <svg viewBox="0 0 140 140" aria-hidden="true">
+          <circle class="ring-track" cx="70" cy="70" r="62"></circle>
+          <circle class="ring-prog" cx="70" cy="70" r="62"></circle>
+        </svg>
+        <div class="pl-pct"><span id="pl-num">0</span><i>%</i></div>
+      </div>
+    </div>
+    <button type="button" class="pl-skip" id="pl-skip">press Enter to jump →</button>
   </div>
-</div>
 
-<!-- Page Content -->
-<div class="w3-padding-large" id="main">
-  <!-- Header/Home -->
-  <header class="w3-container w3-padding-32 w3-center w3-black" id="home">
-    <h1 class="w3-jumbo"><span class="w3-hide-small">I'm</span> Mahesh Gorla</h1>
-    <p>Aspiring Engineer</p>
-    <!--<img src="https://www.w3schools.com/w3images/man_smoke.jpg" alt="boy" class="w3-image" width="992" height="1108"> -->
-    <img src="Files/mgbgc.png" alt="boy" class="w3-image" width="992" height="1108">
-  </header>
+  <!-- ── GPU lattice ── -->
+  <canvas id="c"></canvas>
 
-  <!-- About Section -->
-  <div class="w3-content w3-justify w3-text-grey w3-padding-64">
-    <h2 class="w3-text-light-grey"id="about">About Me</h2>
-    <hr style="width:150px" class="w3-opacity">
-    <p>I am Gorla Mahesh Kumar, I have completed my Bachelor's Degree in Computer Science and Engineering From RMK College of Engineering and Technology. I'm Passionate about Problem Solving and thrive in Team environments.
-    </p>
-    <h2 class="w3-padding-16 w3-text-light-grey">My Skills</h2>
-    <hr style="width:130px" class="w3-opacity">
-    <p class="w3-wide">Python</p>
-    <div class="w3-white">
-      <div class="w3-dark-grey" style="height:28px;width:95%"></div>
-    </div>
-    <p class="w3-wide">Java</p>
-    <div class="w3-white">
-      <div class="w3-dark-grey" style="height:28px;width:80%"></div>
-    </div>
-    <p class="w3-wide">Flask</p>
-    <div class="w3-white">
-      <div class="w3-dark-grey" style="height:28px;width:80%"></div>
-    </div>
-    <p class="w3-wide">Git</p>
-    <div class="w3-white">
-      <div class="w3-dark-grey" style="height:28px;width:90%"></div>
-    </div>
-    <p class="w3-wide">Google Cloud Platform</p>
-    <div class="w3-white">
-      <div class="w3-dark-grey" style="height:28px;width:85%"></div>
-    </div>
-    <p class="w3-wide">Canva Designer</p>
-    <div class="w3-white">
-      <div class="w3-dark-grey" style="height:28px;width:85%"></div>
-    </div><br>
-    
-    <div class="w3-row w3-center w3-padding-16 w3-section w3-light-grey">
-      <div class="w3-quarter w3-section">
-        <span class="w3-xlarge">2400+</span><br>
-        Programs Solved
-      </div>
-      <div class="w3-quarter w3-section">
-        <span class="w3-xlarge">300+</span><br>
-        Daily Challenges
-      </div>
-      <div class="w3-quarter w3-section">
-        <span class="w3-xlarge">200+</span><br>
-        Daily Tests
-      </div>
-      <div class="w3-quarter w3-section">
-        <span class="w3-xlarge">10+</span><br>
-        Projects Done
-      </div>
-    </div>
+  <!-- ── Scroll progress meridian ── -->
+  <div id="meridian"><span id="meridian-fill"></span></div>
 
-    <div class="w3-center-align" >
-      <a href="Files/Manoj Gorla Resume.pdf" download class="w3-button w3-light-grey w3-padding-large w3-section">
-        <i class="fa fa-download"></i> Download Resume
-      </a>
-    </div>
-    
-    <!-- Grid for Projects tables -->
-    <h2 class="w3-padding-16 w3-text-light-grey" id="projects">My Projects</h2>
-    <hr style="width:178px" class="w3-opacity">
-    <div class="w3-row-padding" style="margin:0 -16px">
-      <div class="w3-half w3-margin-bottom">
-        <ul class="w3-ul w3-white w3-center w3-opacity w3-hover-opacity-off">
-          <li class="w3-dark-grey w3-xlarge w3-padding-32">Projects</li>
-          <li class="w3-padding-16">Skin Cancer Detection and Classification</li>
-          <li class="w3-padding-16">Color Prediction</li>
-          <li class="w3-padding-16">Weather Forecast</li>
-          <li class="w3-padding-16">Url Shortener</li>
-          <li class="w3-padding-16">
-            <h2>GitHub</h2>
-            <span class="w3-opacity">Avail On</span>
-          </li>
-          <li class="w3-light-grey w3-padding-24">
-            <a href="https://github.com/gorlamaheshkumar" target="_blank">
-              <button class="w3-button w3-white w3-padding-large w3-hover-black">Check Here</button>
-            </a>
-          </li>
-        </ul>
-      </div>
+  <!-- ── Nav ── -->
+  <nav id="nav">
+    <a class="logo" href="#hero" aria-label="Home">MG<span>.</span></a>
+    <ul class="links">
+      <li><a href="#about">01 / Profile</a></li>
+      <li><a href="#experience">02 / NOC</a></li>
+      <li><a href="#skills">03 / Topology</a></li>
+      <li><a href="#projects">04 / Builds</a></li>
+      <li><a href="#contact">05 / Egress</a></li>
+    </ul>
+    <button id="burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="overlay"><span></span><span></span></button>
+  </nav>
 
-    </div>
-    
-    <!-- Testimonials -->
-    <h2 class="w3-padding-24 w3-text-light-grey">My Achievements</h2>
-    <hr style="width:270px" class="w3-opacity">  
-    <img src="https://www.w3schools.com/w3images/avatar_g2.jpg" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:80px">
-    <p><span class="w3-large w3-margin-right">Creative Art at College Competition</span></p>
-    <p>The Art contenst was Beauty and Ugly Theme. I've highlighted the Beauty in Villages and Ugliness in Cities. It secured me at first place as Winner</p><br>
-    
-  <!-- End About Section -->
+  <div id="overlay" class="overlay">
+    <ul>
+      <li><a href="#about">01 / Profile</a></li>
+      <li><a href="#experience">02 / NOC</a></li>
+      <li><a href="#skills">03 / Topology</a></li>
+      <li><a href="#projects">04 / Builds</a></li>
+      <li><a href="#contact">05 / Egress</a></li>
+    </ul>
   </div>
-  
- 
 
-  <!-- Contact Section -->
-  <div class="w3-padding-64 w3-content w3-text-grey" >
-    <h2 class="w3-text-light-grey" id="contact">Contact Me</h2>
-    <hr style="width:174px" class="w3-opacity">
+  <!-- ════════ HERO / INGRESS ════════ -->
+  <section id="hero" class="panel">
+    <div class="hero-inner">
+      <p class="eyebrow" data-fx>PROGRAMME ANALYST · GLOBAL NETWORK SERVICES</p>
+      <h1>
+        <span class="line" data-split>Mahesh</span>
+        <span class="line grad" data-split>Gorla</span>
+      </h1>
+      <p class="sub" data-fx>Monitoring routers, switches &amp; WAN/LAN across a global network — 1y 2m at Cognizant.</p>
+      <div class="actions" data-fx>
+        <a href="#experience" class="btn-p" data-mag>Trace the Route</a>
+        <a href="Resume.pdf" target="_blank" rel="noopener noreferrer" class="btn-g" data-mag aria-label="Open résumé PDF (opens in new tab)">Resume <span class="arr" aria-hidden="true">↗</span></a>
+      </div>
+      <div class="hud" data-fx>
+        <span class="led"></span> NODE&nbsp;AS-MG &nbsp;·&nbsp; STATUS&nbsp;<b>UP</b> &nbsp;·&nbsp; UPTIME&nbsp;<b>1y&nbsp;2m</b>
+      </div>
+    </div>
+    <div class="scroll-cue" data-fx><span>scroll</span><i></i></div>
+  </section>
 
-    <div class="w3-section">
-      <p><i class="fa fa-map-marker fa-fw w3-text-white w3-xxlarge w3-margin-right"></i> Nellore, Andhra Pradesh, India</p>
-      <p><i class="fa fa-phone fa-fw w3-text-white w3-xxlarge w3-margin-right"></i> Phone: +91 9100128170</p>
-      <p><i class="fa fa-envelope fa-fw w3-text-white w3-xxlarge w3-margin-right"> </i> Email: gorlamahii@mail.com</p>
-    </div><br>
-    <p>Let's get in touch. Send me a message:</p>
+  <!-- ════════ NODE 01 / PROFILE ════════ -->
+  <section id="about" class="panel">
+    <div class="glass wrap">
+      <p class="label r">NODE 01 / PROFILE</p>
+      <div class="about-grid">
+        <div>
+          <h2 class="r" data-h2>Enthusiastic about <em>Networks</em></h2>
+          <p class="bio r">
+            Programme Analyst at Cognizant in Global Network Services, with over a year of
+            experience supporting a global NOC environment. Experienced in network monitoring,
+            basic troubleshooting and maintaining technical documentation. Strong problem-solving
+            skills and the ability to work in a team environment.
+          </p>
+          <div class="edu r">
+            <span class="edu-k">EDUCATION</span>
+            <strong>BE · Computer Science &amp; Engineering</strong>
+            <span class="edu-v">RMK College of Engineering and Technology, Chennai · 2020–2024</span>
+          </div>
+        </div>
+        <div class="stats r">
+          <div class="sc"><span class="sn" data-n="14">0</span><sup>mo</sup><p>Experience</p></div>
+          <div class="sc"><span class="sn" data-n="4">0</span><sup>+</sup><p>Languages</p></div>
+          <div class="sc"><span class="sn" data-n="8.25" data-dec="2">0</span><p>CGPA</p></div>
+          <div class="sc"><span class="sn" data-n="3">0</span><p>Certifications</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <form action="https://formspree.io/f/myzgpppa/" method="POST">
-      <p><input class="w3-input w3-padding-16" type="text" placeholder="Name" required name="Name"></p>
-      <p><input class="w3-input w3-padding-16" type="text" placeholder="Email" required name="Email"></p>
-      <p><input class="w3-input w3-padding-16" type="text" placeholder="Subject" required name="Subject"></p>
-      <p><input class="w3-input w3-padding-16" type="text" placeholder="Message" required name="Message"></p>
-      <p class="w3-center-align">
-        <button class="w3-button w3-light-grey w3-padding-large" type="submit">
-          <i class="fa fa-paper-plane"></i> SEND MESSAGE
-        </button>
-      </p>
-    </form>
-  <!-- End Contact Section -->
-  </div>
-  
-<!-- Footer. This section contains an ad for W3Schools Spaces. You can leave it to support us. -->
-<!-- Footer -->
-<footer class="w3-content w3-padding-64 w3-text-grey w3-xlarge w3-center-align">
-  <a href="https://www.facebook.com/maheshkumargorla/" target="_blank"><i class="fa fa-facebook-official w3-hover-opacity"></i></a> 
-  <a href="https://www.linkedin.com/in/maheshgorla/" target="_blank"><i class="fa fa-linkedin w3-hover-opacity"></i></a> 
-  <a href="https://x.com/mahesh__gorla" target="_blank"><i class="fa fa-twitter w3-hover-opacity"></i></a> 
-   <!-- Linktree Icon -->
-  <a href="https://linktr.ee/maheshgorla" target="_blank"><i class="fa fa-tree w3-hover-opacity"></i></a> 
-    <a href="https://www.snapchat.com/add/mahesh-gorla?share_id=LuA3NQdYonQ&locale=en-IN" target="_blank"><i class="fa fa-snapchat w3-hover-opacity"></i></a> 
-  <a href="https://wa.me//+919100128170/" target="_blank"><i class="fa fa-whatsapp w3-hover-opacity"></i></a> 
-  <a href="https://www.instagram.com/mahesh__gorla/" target="_blank"><i class="fa fa-instagram w3-hover-opacity"></i></a>
- 
+  <!-- ════════ NODE 02 / EXPERIENCE / THE NOC ════════ -->
+  <section id="experience" class="panel">
+    <div class="glass wrap">
+      <p class="label r">NODE 02 / 10.10 EXPERIENCE</p>
+      <div class="exp-head r">
+        <h2 data-h2>Inside the <em>NOC</em></h2>
+        <div class="exp-role">
+          <strong>Programme Analyst · Cognizant</strong>
+          <span class="client-chip">McDonald's Network Services</span>
+        </div>
+      </div>
+      <div class="feed">
+        <div class="feed-spine"></div>
+        <div class="feed-row r">
+          <span class="led-box"><span class="led2"></span></span>
+          <p>Assisted in monitoring routers, switches, and WAN/LAN connections using LogicMonitor and LIVENX.</p>
+          <span class="feed-tag">LogicMonitor · LIVENX</span>
+        </div>
+        <div class="feed-row r">
+          <span class="led-box"><span class="led2"></span></span>
+          <p>Supported basic troubleshooting of network alerts and incidents under senior engineers.</p>
+          <span class="feed-tag">INCIDENTS</span>
+        </div>
+        <div class="feed-row r">
+          <span class="led-box"><span class="led2"></span></span>
+          <p>Helped prepare network performance reports and maintain logs / SOP documentation.</p>
+          <span class="feed-tag">SOP · LOGS</span>
+        </div>
+        <div class="feed-row r">
+          <span class="led-box"><span class="led2"></span></span>
+          <p>Gained exposure to SD-WAN, VPN, routing concepts and NOC workflows.</p>
+          <span class="feed-tag">SD-WAN · VPN</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <p>@maheshgorla, All rights reserved</p>
-</footer>
+  <!-- ════════ NODE 03 / SKILLS / TOPOLOGY ════════ -->
+  <section id="skills" class="panel">
+    <div class="glass wrap">
+      <p class="label r">NODE 03 / 10.20 TOPOLOGY</p>
+      <h2 class="r" data-h2>Topology <em>Map</em></h2>
+      <div class="clusters">
+        <div class="cluster r">
+          <div class="cl-head">NETWORKING <span class="cl-count" data-n="8">0</span><i>nodes</i></div>
+          <div class="chips">
+            <span data-mag>VLAN</span><span data-mag>Subnetting</span><span data-mag>TCP/IP</span><span data-mag>DNS</span>
+            <span data-mag>DHCP</span><span data-mag>VPN</span><span data-mag>SD-WAN</span><span data-mag>Network Security</span>
+          </div>
+        </div>
+        <div class="cluster r">
+          <div class="cl-head">TOOLS <span class="cl-count" data-n="7">0</span><i>nodes</i></div>
+          <div class="chips">
+            <span data-mag>LogicMonitor</span><span data-mag>LIVENX</span><span data-mag>IPAM</span><span data-mag>Cisco</span>
+            <span data-mag>Meraki</span><span data-mag>VMware</span><span data-mag>VS Code</span>
+          </div>
+        </div>
+        <div class="cluster r">
+          <div class="cl-head">PROGRAMMING / CLOUD <span class="cl-count" data-n="4">0</span><i>nodes</i></div>
+          <div class="chips">
+            <span data-mag>Python</span><span data-mag>Java</span><span data-mag>SQL</span><span data-mag>GCP</span>
+          </div>
+        </div>
+        <div class="cluster r">
+          <div class="cl-head">FRAMEWORKS <span class="cl-count" data-n="3">0</span><i>nodes</i></div>
+          <div class="chips">
+            <span data-mag>GitHub</span><span data-mag>Pandas</span><span data-mag>OpenCV</span>
+          </div>
+        </div>
+        <div class="cluster r">
+          <div class="cl-head">SOFT SKILLS <span class="cl-count" data-n="4">0</span><i>nodes</i></div>
+          <div class="chips">
+            <span data-mag>Problem-solving</span><span data-mag>Communication</span><span data-mag>Team-player</span><span data-mag>Adaptability</span>
+          </div>
+        </div>
+        <div class="cluster r">
+          <div class="cl-head">LANGUAGES <span class="cl-count" data-n="4">0</span><i>locales</i></div>
+          <div class="chips">
+            <span data-mag>English</span><span data-mag>Telugu</span><span data-mag>Tamil</span><span data-mag>Japanese</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
+  <!-- ════════ NODE 04 / PROJECTS / DEPLOYED ════════ -->
+  <section id="projects" class="panel">
+    <div class="wrap">
+      <p class="label r">NODE 04 / 10.30 DEPLOYED</p>
+      <h2 class="r" data-h2>Deployed <em>Builds</em></h2>
+      <div class="proj-grid">
 
+        <a href="https://github.com/gorlamaheshkumar" target="_blank" rel="noopener noreferrer" class="pcard r" data-tilt>
+          <span class="pc-watermark">01</span>
+          <div class="pc-top"><span class="pc-num">01</span><span class="pc-date">JUL 2025</span></div>
+          <h3>PPT Automation</h3>
+          <span class="pc-flag">Cognizant Vibe Coding</span>
+          <p>Flask web app that automates PowerPoint report generation from Excel — dynamic charts, tables, drag-and-drop upload and real-time status tracking. Built with GitHub Copilot; designed for Azure Linux deployment with optional pywin32 chart styling.</p>
+          <div class="pc-tech"><span>Flask</span><span>Python</span><span>GitHub Copilot</span><span>Azure</span></div>
+          <div class="pc-foot"><span class="pc-status"><i></i> DEPLOYED</span><span class="pc-arrow" aria-hidden="true">↗</span></div>
+        </a>
 
+        <a href="https://github.com/gorlamaheshkumar" target="_blank" rel="noopener noreferrer" class="pcard r" data-tilt>
+          <span class="pc-watermark">02</span>
+          <div class="pc-top"><span class="pc-num">02</span><span class="pc-date">JAN 2024</span></div>
+          <h3>Skin Cancer Detection</h3>
+          <p>Deep-learning CNN with image processing that detects and classifies the level of cancer. Google Vision filters non-skin images and GenAI is integrated to explain the findings.</p>
+          <div class="pc-tech"><span>Python</span><span>CNN</span><span>Google Vision</span><span>GenAI</span></div>
+          <div class="pc-foot"><span class="pc-status"><i></i> DEPLOYED</span><span class="pc-arrow" aria-hidden="true">↗</span></div>
+        </a>
 
+        <a href="https://github.com/gorlamaheshkumar" target="_blank" rel="noopener noreferrer" class="pcard r" data-tilt>
+          <span class="pc-watermark">03</span>
+          <div class="pc-top"><span class="pc-num">03</span><span class="pc-date">JAN 2023</span></div>
+          <h3>Color Prediction</h3>
+          <p>OpenCV and Pandas program that detects the RGB color from a given image, matching it against a CSV color map.</p>
+          <div class="pc-tech"><span>Python</span><span>OpenCV</span><span>Pandas</span></div>
+          <div class="pc-foot"><span class="pc-status"><i></i> DEPLOYED</span><span class="pc-arrow" aria-hidden="true">↗</span></div>
+        </a>
 
-<!-- END PAGE CONTENT -->
-</div>
+      </div>
+      <div class="proj-foot r">
+        <a href="https://github.com/gorlamaheshkumar" target="_blank" rel="noopener noreferrer" class="btn-g" data-mag aria-label="All builds on GitHub (opens in new tab)">All builds on GitHub →</a>
+      </div>
+    </div>
+  </section>
 
+  <!-- ════════ NODE 05 / EGRESS / CONTACT ════════ -->
+  <section id="contact" class="panel">
+    <div class="glass wrap">
+      <p class="label r">NODE 05 / 10.40 EGRESS</p>
+      <h2 class="r" data-h2>Establish a <em>Session</em></h2>
+      <div class="contact-grid">
+        <div class="c-info r">
+          <button class="ci copy" data-copy="gorlamaheshkumar@gmail.com">
+            <span>EMAIL</span><strong>gorlamaheshkumar@gmail.com</strong>
+          </button>
+          <button class="ci copy" data-copy="+91 9100128170">
+            <span>PHONE</span><strong>+91 9100128170</strong>
+          </button>
+          <a class="ci" href="https://www.linkedin.com/in/maheshgorla" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile (opens in new tab)">
+            <span>LINKEDIN</span><strong>in/maheshgorla ↗</strong>
+          </a>
+          <a class="ci" href="https://github.com/gorlamaheshkumar" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile (opens in new tab)">
+            <span>GITHUB</span><strong>gorlamaheshkumar ↗</strong>
+          </a>
+          <div class="certs">
+            <span class="certs-k">CERTIFICATIONS</span>
+            <span class="cert-chip">Associate Cloud Engineer · Google</span>
+            <span class="cert-chip">Prompt Engineering · Great Learning</span>
+            <span class="cert-chip">Python · HackerRank</span>
+            <span class="cert-chip gold" data-mag>★ Creative Art of the Year · 2023</span>
+          </div>
+          <a href="Resume.pdf" target="_blank" rel="noopener noreferrer" class="btn-g res-btn" data-mag aria-label="Download résumé PDF (opens in new tab)">Download Résumé ↗</a>
+        </div>
+
+        <form id="cf" class="r">
+          <div class="row2">
+            <div class="fg"><input id="fn" type="text" placeholder=" " required/><label for="fn">Name</label><i></i></div>
+            <div class="fg"><input id="fe" type="email" placeholder=" " required/><label for="fe">Email</label><i></i></div>
+          </div>
+          <div class="fg"><input id="fs" type="text" placeholder=" " required/><label for="fs">Subject</label><i></i></div>
+          <div class="fg"><textarea id="fm" rows="4" placeholder=" " required></textarea><label for="fm">Message</label><i></i></div>
+          <button type="submit" class="btn-p sub-btn" data-mag><span>Send</span><span class="arr" aria-hidden="true">→</span></button>
+          <p id="cf-status" class="sr-only" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+      <footer>
+        <span>© 2026 Mahesh Gorla · Network Engineer</span>
+        <span class="fm">Topology rendered in Three.js · No frameworks · No build step</span>
+      </footer>
+    </div>
+  </section>
+
+  <!-- copy toast -->
+  <div id="toast"></div>
+
+  <script src="main.js"></script>
 </body>
 </html>
