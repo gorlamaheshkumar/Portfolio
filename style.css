@@ -588,9 +588,17 @@ footer{display:flex;justify-content:center;align-items:center;text-align:center;
 @keyframes clr-barG{0%,100%{transform:scaleX(.5)}28%{transform:scaleX(.9)}56%{transform:scaleX(.35)}84%{transform:scaleX(.8)}}
 @keyframes clr-barB{0%,100%{transform:scaleX(.7)}28%{transform:scaleX(.6)}56%{transform:scaleX(.9)}84%{transform:scaleX(.4)}}
 
-/* reduced-motion + touch: no hover media at all (cards stay text-only) */
+/* reduced-motion: no hover media at all */
 @media (prefers-reduced-motion:reduce){ .pcard>.pc-media{display:none} }
-@media (hover:none),(pointer:coarse){ .pcard>.pc-media{display:none} }
+/* touch/mobile has no :hover — reveal + RUN the animation when a card scrolls into view (JS toggles .in-view),
+   and apply the same text-legibility treatment so the copy stays readable over the animation. */
+@media (hover:none),(pointer:coarse){
+  .pcard.in-view .pc-media{opacity:.85}
+  .pcard.in-view .pc-anim .anim{animation-play-state:running!important}
+  .pcard.in-view h3,.pcard.in-view .pc-flag,.pcard.in-view .pc-top,.pcard.in-view .pc-status{text-shadow:0 0 5px rgba(3,4,10,.95),0 1px 4px rgba(3,4,10,.9)}
+  .pcard.in-view .pc-tech span{text-shadow:0 0 4px rgba(3,4,10,.9)}
+  .pcard.in-view p{color:rgba(232,238,255,.88);text-shadow:0 0 5px rgba(3,4,10,.98),0 1px 6px rgba(3,4,10,.92)}
+}
 
 /* ════════════════════════════════════════════════════════════════════
    ✦ PROJECTS CAROUSEL — horizontal 3-up scroller (roll for the rest)
