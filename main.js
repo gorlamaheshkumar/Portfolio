@@ -669,7 +669,7 @@ document.querySelectorAll('[data-copy]').forEach(function (btn) {
   });
 });
 
-/* ── Contact form ── */
+/* ── Contact form (Formspree) ── */
 var cf = document.getElementById('cf');
 if (cf) {
   var cfStatus = document.getElementById('cf-status');
@@ -685,22 +685,24 @@ if (cf) {
       name: (document.getElementById('fn') || {}).value || '',
       email: (document.getElementById('fe') || {}).value || '',
       subject: (document.getElementById('fs') || {}).value || '',
-      message: (document.getElementById('fm') || {}).value || '',
-      _subject: 'Portfolio Contact: ' + ((document.getElementById('fs') || {}).value || 'New Session'),
-      _template: 'table',
-      _captcha: 'false'
+      message: (document.getElementById('fm') || {}).value || ''
     };
 
-    fetch('https://formsubmit.co/ajax/gorlamahii@gmail.com', {
+    fetch('https://formspree.io/f/myzgpppa', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(payload)
     })
       .then(function (res) {
-        if (!res.ok) throw new Error('Status ' + res.status);
+        if (!res.ok) {
+          return res.json().then(function (errData) {
+            var msg = errData && errData.errors ? errData.errors.map(function (err) { return err.message; }).join(', ') : 'Transmission failed';
+            throw new Error(msg);
+          });
+        }
         return res.json();
       })
       .then(function () {
@@ -716,30 +718,16 @@ if (cf) {
           if (cfStatus) cfStatus.textContent = '';
         }, 4000);
       })
-      .catch(function () {
-        // Corporate proxy/Zscaler or adblocker blocked background request.
-        // Fallback: Open mailto with the message pre-filled so communication is never lost!
-        btn.innerHTML = '<span>Opening Mail…</span>';
-        btn.style.background = 'linear-gradient(135deg,#00b4d8,#7b2fff)';
-        if (cfStatus) cfStatus.textContent = 'Network restriction detected. Redirecting to mail client...';
-        if (typeof popToast === 'function') popToast('REDIRECTING TO MAIL');
-
-        var mailtoUrl = 'mailto:gorlamahii@gmail.com?subject=' +
-          encodeURIComponent(payload.subject || 'Portfolio Session') +
-          '&body=' + encodeURIComponent('From: ' + payload.name + ' (' + payload.email + ')\n\n' + payload.message);
-
+      .catch(function (err) {
+        btn.innerHTML = '<span>ERR ● Failed</span>';
+        btn.style.background = 'linear-gradient(135deg,#ff3366,#ff0055)';
+        if (cfStatus) cfStatus.textContent = (err && err.message) ? err.message : 'Transmission failed. Please email gorlamahii@gmail.com directly.';
+        if (typeof popToast === 'function') popToast('ERR ● FAILED TO ROUTE');
         setTimeout(function () {
-          window.location.href = mailtoUrl;
-          btn.innerHTML = '<span>Routed ✓ Mail Client</span>';
-          btn.style.background = 'linear-gradient(135deg,#00ff88,#00b4d8)';
-          cf.reset();
-          setTimeout(function () {
-            btn.innerHTML = orig;
-            btn.style.background = '';
-            btn.disabled = false;
-            if (cfStatus) cfStatus.textContent = '';
-          }, 4000);
-        }, 900);
+          btn.innerHTML = orig;
+          btn.style.background = '';
+          btn.disabled = false;
+        }, 4000);
       });
   });
 }
