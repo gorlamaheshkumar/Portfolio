@@ -717,15 +717,29 @@ if (cf) {
         }, 4000);
       })
       .catch(function () {
-        btn.innerHTML = '<span>ERR ● 500 FAIL</span>';
-        btn.style.background = 'linear-gradient(135deg,#ff3366,#ff0055)';
-        if (cfStatus) cfStatus.textContent = 'Transmission failed. Please email gorlamahii@gmail.com directly.';
-        if (typeof popToast === 'function') popToast('ERR ● FAILED TO ROUTE');
+        // Corporate proxy/Zscaler or adblocker blocked background request.
+        // Fallback: Open mailto with the message pre-filled so communication is never lost!
+        btn.innerHTML = '<span>Opening Mail…</span>';
+        btn.style.background = 'linear-gradient(135deg,#00b4d8,#7b2fff)';
+        if (cfStatus) cfStatus.textContent = 'Network restriction detected. Redirecting to mail client...';
+        if (typeof popToast === 'function') popToast('REDIRECTING TO MAIL');
+
+        var mailtoUrl = 'mailto:gorlamahii@gmail.com?subject=' +
+          encodeURIComponent(payload.subject || 'Portfolio Session') +
+          '&body=' + encodeURIComponent('From: ' + payload.name + ' (' + payload.email + ')\n\n' + payload.message);
+
         setTimeout(function () {
-          btn.innerHTML = orig;
-          btn.style.background = '';
-          btn.disabled = false;
-        }, 4000);
+          window.location.href = mailtoUrl;
+          btn.innerHTML = '<span>Routed ✓ Mail Client</span>';
+          btn.style.background = 'linear-gradient(135deg,#00ff88,#00b4d8)';
+          cf.reset();
+          setTimeout(function () {
+            btn.innerHTML = orig;
+            btn.style.background = '';
+            btn.disabled = false;
+            if (cfStatus) cfStatus.textContent = '';
+          }, 4000);
+        }, 900);
       });
   });
 }
