@@ -677,13 +677,56 @@ if (cf) {
     e.preventDefault();
     var btn = cf.querySelector('.sub-btn');
     var orig = btn.innerHTML;
+    btn.disabled = true;
     btn.innerHTML = '<span>TX…</span>';
-    setTimeout(function () {
-      btn.innerHTML = '<span>Routed ✓ 200 OK</span>';
-      btn.style.background = 'linear-gradient(135deg,#00ff88,#00b4d8)';
-      if (cfStatus) cfStatus.textContent = 'Message routed successfully.';
-    }, 700);
-    setTimeout(function () { btn.innerHTML = orig; btn.style.background = ''; cf.reset(); if (cfStatus) cfStatus.textContent = ''; }, 3300);
+    if (cfStatus) cfStatus.textContent = 'Transmitting packet...';
+
+    var payload = {
+      name: (document.getElementById('fn') || {}).value || '',
+      email: (document.getElementById('fe') || {}).value || '',
+      subject: (document.getElementById('fs') || {}).value || '',
+      message: (document.getElementById('fm') || {}).value || '',
+      _subject: 'Portfolio Contact: ' + ((document.getElementById('fs') || {}).value || 'New Session'),
+      _template: 'table',
+      _captcha: 'false'
+    };
+
+    fetch('https://formsubmit.co/ajax/gorlamahii@gmail.com', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error('Status ' + res.status);
+        return res.json();
+      })
+      .then(function () {
+        btn.innerHTML = '<span>Routed ✓ 200 OK</span>';
+        btn.style.background = 'linear-gradient(135deg,#00ff88,#00b4d8)';
+        if (cfStatus) cfStatus.textContent = 'Message routed successfully to gorlamahii@gmail.com.';
+        if (typeof popToast === 'function') popToast('ROUTED ● 200 OK');
+        cf.reset();
+        setTimeout(function () {
+          btn.innerHTML = orig;
+          btn.style.background = '';
+          btn.disabled = false;
+          if (cfStatus) cfStatus.textContent = '';
+        }, 4000);
+      })
+      .catch(function () {
+        btn.innerHTML = '<span>ERR ● 500 FAIL</span>';
+        btn.style.background = 'linear-gradient(135deg,#ff3366,#ff0055)';
+        if (cfStatus) cfStatus.textContent = 'Transmission failed. Please email gorlamahii@gmail.com directly.';
+        if (typeof popToast === 'function') popToast('ERR ● FAILED TO ROUTE');
+        setTimeout(function () {
+          btn.innerHTML = orig;
+          btn.style.background = '';
+          btn.disabled = false;
+        }, 4000);
+      });
   });
 }
 
