@@ -669,7 +669,7 @@ document.querySelectorAll('[data-copy]').forEach(function (btn) {
   });
 });
 
-/* ── Contact form (Formspree) ── */
+/* ── Contact form (Google Apps Script) ── */
 var cf = document.getElementById('cf');
 if (cf) {
   var cfStatus = document.getElementById('cf-status');
@@ -688,23 +688,14 @@ if (cf) {
       message: (document.getElementById('fm') || {}).value || ''
     };
 
-    fetch('https://formspree.io/f/myzgpppa', {
+    fetch('https://script.google.com/macros/s/AKfycbxU-uJZA4x_t7w-1oqUhk3GLXb6X2E3lxXsFOXCIMkGXnXCvWh2yG9WPDAMAHbBE1Y/exec', {
       method: 'POST',
+      mode: 'no-cors',
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'text/plain;charset=utf-8'
       },
       body: JSON.stringify(payload)
     })
-      .then(function (res) {
-        if (!res.ok) {
-          return res.json().then(function (errData) {
-            var msg = errData && errData.errors ? errData.errors.map(function (err) { return err.message; }).join(', ') : 'Transmission failed';
-            throw new Error(msg);
-          });
-        }
-        return res.json();
-      })
       .then(function () {
         btn.innerHTML = '<span>Routed ✓ 200 OK</span>';
         btn.style.background = 'linear-gradient(135deg,#00ff88,#00b4d8)';
@@ -718,10 +709,10 @@ if (cf) {
           if (cfStatus) cfStatus.textContent = '';
         }, 4000);
       })
-      .catch(function (err) {
+      .catch(function () {
         btn.innerHTML = '<span>ERR ● Failed</span>';
         btn.style.background = 'linear-gradient(135deg,#ff3366,#ff0055)';
-        if (cfStatus) cfStatus.textContent = (err && err.message) ? err.message : 'Transmission failed. Please email gorlamahii@gmail.com directly.';
+        if (cfStatus) cfStatus.textContent = 'Transmission failed. Please email gorlamahii@gmail.com directly.';
         if (typeof popToast === 'function') popToast('ERR ● FAILED TO ROUTE');
         setTimeout(function () {
           btn.innerHTML = orig;
